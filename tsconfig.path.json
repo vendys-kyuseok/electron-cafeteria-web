@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@apis": ["./apis"],
+      "@apis/*": ["./apis/*"],
+      "@assets": ["./assets"],
+      "@assets/*": ["./assets/*"],
+      "@components": ["./components"],
+      "@components/*": ["./components/*"],
+      "@containers": ["./containers"],
+      "@containers/*": ["./containers/*"],
+      "@hooks": ["./hooks"],
+      "@hooks/*": ["./hooks/*"],
+      "@images": ["./assets/images"],
+      "@images/*": ["./assets/images/*"],
+      "@layouts": ["./layouts"],
+      "@layouts/*": ["./layouts/*"],
+      "@package": ["../package.json"], // version 체크용
+      "@pages": ["./pages"],
+      "@pages/*": ["./pages/*"],
+      "@styles": ["./styles"],
+      "@styles/*": ["./styles/*"],
+      "@utils": ["./utils"],
+      "@utils/*": ["./utils/*"]
+    }
+  }
+}
