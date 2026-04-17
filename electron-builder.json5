@@ -1,43 +1,46 @@
-// @see - https://www.electron.build/configuration/configuration
 {
-  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
-  "asar": true,
-  "productName": "YourAppName",
-  "directories": {
-    "output": "release/${version}"
+  $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
+
+  appId: 'com.v1.cafeteria-web',
+  productName: 'cafeteria',
+  asar: true,
+  directories: {
+    output: 'release/${version}'
   },
-  "files": [
-    "dist",
-    "dist-electron"
+  files: ['dist', 'dist-electron'],
+  publish: [
+    {
+      provider: 'generic',
+      url: 'https://update.sikdae.com/cafeteria/'
+    }
   ],
-  "mac": {
-    "target": [
-      "dmg"
-    ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
-  },
-  "win": {
-    "target": [
+  win: {
+    target: [
       {
-        "target": "nsis",
-        "arch": [
-          "x64"
-        ]
+        target: 'nsis',
+        arch: ['x64']
       }
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    artifactName: '${productName}-Windows-${version}-Setup.${ext}'
+    // "icon": "resources/windows/ic_sik.ico"
   },
-  "nsis": {
-    "oneClick": false,
-    "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
+  nsis: {
+    oneClick: true,
+    perMachine: true,
+    shortcutName: '구내식당',
+    language: 1042,
+    allowElevation: true,
+    deleteAppDataOnUninstall: true,
+    allowToChangeInstallationDirectory: false
+    // "installerHeaderIcon": "resources/windows/ic_sik.ico"
   },
-  "linux": {
-    "target": [
-      "AppImage"
-    ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
+  mac: {
+    target: ['dmg'],
+    category: 'public.app-category.graphics-design'
+    // "icon": "resources/osx/Apple.icns"
+  },
+  dmg: {
+    // "icon": "resources/osx/Apple.icns",
+    background: null
   }
 }

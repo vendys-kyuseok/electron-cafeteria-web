@@ -28,7 +28,7 @@ const createMenuColumns = ({
     cellRenderer: (_, values) => (
       <Checkbox
         sx={{ left: '10px', padding: '0px' }}
-        checked={values.id === selectedMenuId}
+        checked={values?.id === selectedMenuId}
         onClick={() => onSelectMenu(values.id, values)}
       />
     )
@@ -100,7 +100,7 @@ const MenuPage = () => {
       setLocalStorage('menus', baseMenus); // 원본 저장
 
       const savedDisplay = getMenuDisplayState() ?? [];
-      const storedById = new Map(savedDisplay.map((menu) => [menu.id, menu]));
+      const storedById = new Map(savedDisplay?.map((menu) => [menu?.id, menu]));
 
       const nextDisplayState = baseMenus.map((menu) => normalizeMenuDisplay({ ...menu, ...storedById.get(menu.id) }));
       setMenuDisplay(nextDisplayState);
@@ -111,13 +111,13 @@ const MenuPage = () => {
   const updateDisplayMenu = useCallback((menuId: string, updater: (base: IMenuItem) => Partial<IMenuItem>) => {
     setMenuDisplay((prevState) => {
       const currentMenus = getMenus() ?? [];
-      const baseMenu = prevState.find((menu) => menu.id === menuId) ?? currentMenus.find((menu) => menu.id === menuId);
+      const baseMenu = prevState?.find((menu) => menu?.id === menuId) ?? currentMenus.find((menu) => menu?.id === menuId);
       if (!baseMenu) return prevState;
 
       const updatedMenu = { ...normalizeMenuDisplay(baseMenu), ...updater(baseMenu) };
 
-      const isExist = prevState.some((menu) => menu.id === menuId);
-      const nextDisplayState = isExist ? prevState.map((menu) => (menu.id === menuId ? updatedMenu : menu)) : [...prevState, updatedMenu];
+      const isExist = prevState.some((menu) => menu?.id === menuId);
+      const nextDisplayState = isExist ? prevState.map((menu) => (menu?.id === menuId ? updatedMenu : menu)) : [...prevState, updatedMenu];
 
       setMenuDisplayState(nextDisplayState);
       return nextDisplayState;
@@ -181,7 +181,7 @@ const MenuPage = () => {
   return (
     <Box sx={{ padding: '0px 8px 8px', position: 'relative' }}>
       <WhiteWrapper>
-        <BasicTable columns={columns} data={menuRows} onRowClick={(values) => handleSelectMenu(values.id, values)} />
+        <BasicTable columns={columns} data={menuRows} onRowClick={(values) => handleSelectMenu(values?.id, values)} />
       </WhiteWrapper>
       <SelectedMenuButton disabled={!selectedMenuId} onClick={() => navigate('/cafeteria/payment')}>
         메뉴 선택 완료

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
@@ -24,6 +25,8 @@ export interface ICafeteria {
 }
 
 export const useAuth = () => {
+  const navigate = useNavigate();
+
   const { mutateAsync: login } = useMutation<OAuth, AxiosError<IErrorResponseData>, Record<string, string> | undefined, unknown>({
     mutationKey: ['createAuthToken'],
     mutationFn: createAuthToken,
@@ -35,7 +38,7 @@ export const useAuth = () => {
         access_token: result?.access_token,
         refresh_token: result?.refresh_token
       });
-      window.location.href = '/';
+      navigate('/', { replace: true });
     },
     onError: (error, variables) => {
       console.log('### 요청 실패:', error, variables);
@@ -45,7 +48,7 @@ export const useAuth = () => {
 
   const logout = () => {
     clearByLogout();
-    window.location.href = '/';
+    navigate('/', { replace: true });
   };
 
   return { login, logout };

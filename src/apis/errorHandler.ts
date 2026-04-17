@@ -50,7 +50,8 @@ export const errorHandler = async (error: AxiosError<IErrorResponseData>) => {
       const oauth = await refreshAuthToken().catch((refreshError) => {
         processQueue(refreshError, null);
         clearByLogout();
-        window.location.href = '/';
+        // window.location.href = '/';
+        // window.location.reload();
       });
       setLocalStorage('oauth', {
         access_token: oauth?.access_token,
@@ -69,7 +70,8 @@ export const errorHandler = async (error: AxiosError<IErrorResponseData>) => {
     } else if (AUTH_ERROR_CODES.indexOf(errorData.status) > -1) {
       clearByLogout();
       alert('재로그인이 필요합니다. 로그인 화면으로 돌아갑니다.');
-      window.location.href = '/';
+      // window.location.href = '/';
+      // window.location.reload();
       return Promise.reject(error);
     }
   }

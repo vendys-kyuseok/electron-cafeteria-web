@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 
 export const useElectron = () => {
   const ipc = window.ipcRenderer;
@@ -23,15 +23,24 @@ export const useElectron = () => {
 
   // ### Electron으로 부터 응답이 오길 기다림
   const useIpcListener = (channel: string, callback: (event: any, ...args: any[]) => void) => {
+    const callbackRef = useRef(callback);
+
+    useEffect(() => {
+      callbackRef.current = callback;
+    }, [callback]);
+
     useEffect(() => {
       // 리스너 등록
-      ipc.on(channel, callback);
+      const listener = (event: any, ...args: any[]) => {
+        callbackRef.current(event, ...args);
+      };
+      ipc.on(channel, listener);
 
       // 컴포넌트 언마운트 시 리스너 제거
       return () => {
-        ipc.off(channel, callback);
+        ipc.off(channel, listener);
       };
-    }, [callback, channel, ipc]);
+    }, [channel, ipc]);
   };
 
   return { invoke, send, useIpcListener };

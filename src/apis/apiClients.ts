@@ -7,8 +7,6 @@ import { getAuthToken } from '@utils/storageUtils';
 export const getAuthHost = () => import.meta.env.VITE_APP_AUTH_URL;
 export const getStoreHost = () => import.meta.env.VITE_APP_STORE_URL;
 
-// https://dev-auth.mealc.co.kr/oauth2/token
-
 export const authClient: AxiosInstance = axios.create({
   baseURL: getAuthHost()
   // headers: { 'X-User-Agent': getApiClientXUserAgent(), 'Content-Type': 'application/json' }
