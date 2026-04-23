@@ -30,8 +30,8 @@ const MenuDisplayStateModal = ({ menuId, open, onClose, onSubmit }: MenuDisplayS
       const menuDisplay = getMenuDisplayState() ?? [];
       const targetMenu = menuDisplay.find((item) => item.id === menuId);
 
-      setMenuName(String(targetMenu?.name ?? ''));
-      setMenuPrice(String(targetMenu?.price ?? ''));
+      setMenuName(String(targetMenu?.displayMenuName ?? ''));
+      setMenuPrice(String(targetMenu?.displayMenuPrice ?? ''));
       setTicketType(targetMenu?.ticketType ?? 'WON');
     }
   }, [open, menuId]);

@@ -1,45 +1,62 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetCafeteriaMenu, IMenuItem, TicketType } from '@hooks/cafeteria';
 import { Button, Box, Checkbox } from '@mui/material';
-import { setLocalStorage, getSelectedMenu, getMenuDisplayState, setMenuDisplayState, getMenus } from '@utils/storageUtils';
+import { FlexBoxCenter } from '@styles';
 import { LoadingOverlay, BasicTable, TColumn } from '@components';
+import { useGetCafeteriaMenu, IMenuItem, TicketType } from '@hooks/cafeteria';
+import { setLocalStorage, setSelectedMenu, getSelectedMenu, getMenuDisplayState, setMenuDisplayState, getMenus } from '@utils/storageUtils';
 
 import MenuDisplayStateModal from './MenuDisplayStateModal';
 import { WhiteWrapper, SelectedMenuButton, StyledSwitch } from './styles';
 
 export type MenuDisplayValue = { menuId: string; menuName: string; menuPrice: string; ticketType: TicketType };
-
 export type MenuColumnOptions = {
   selectedMenuId?: string;
   onSelectMenu: (menuId: string, menuInfo: IMenuItem) => void;
-  onOpenMenuEdit: (menuId: string) => void;
+  onToggleModal: (menuId: string) => void;
   onToggleMenuVisible: (menuId: string, fieldName: string, value: boolean) => void;
 };
 
-const createMenuColumns = ({
-  selectedMenuId,
-  onSelectMenu,
-  onOpenMenuEdit,
-  onToggleMenuVisible
-}: MenuColumnOptions): TColumn<IMenuItem>[] => [
+const createMenuColumns = ({ selectedMenuId, ...func }: MenuColumnOptions): TColumn<IMenuItem>[] => [
   {
     fieldStyle: { width: '28px', padding: '0px' },
     cellRenderer: (_, values) => (
       <Checkbox
         sx={{ left: '10px', padding: '0px' }}
         checked={values?.id === selectedMenuId}
-        onClick={() => onSelectMenu(values.id, values)}
+        onClick={() => func.onSelectMenu(values.id, values)}
       />
     )
   },
-  { field: 'name', headerName: '매뉴명' },
+  {
+    field: 'name',
+    headerName: '매뉴명',
+    cellRenderer: (value, values) => {
+      const isDisplay = values?.displayMenuName && values?.displayMenuName !== value;
+      return (
+        <FlexBoxCenter gap="4px">
+          <Box sx={{ fontWeight: '700' }}>{isDisplay ? values?.displayMenuName : value}</Box>
+          <Box>{isDisplay ? `(${value})` : null}</Box>
+        </FlexBoxCenter>
+      );
+    }
+  },
   {
     field: 'price',
     fieldStyle: { width: '80px', fontWeight: '700' },
     headerName: '매뉴 금액',
     align: 'right',
-    cellRenderer: (value) => Number(value || 0).toLocaleString()
+    cellRenderer: (value, values) => {
+      const price = Number(value || 0).toLocaleString();
+      const displayPrice = Number(values?.displayMenuPrice || 0).toLocaleString();
+      const isDisplay = values?.displayMenuPrice && displayPrice !== price;
+      return (
+        <FlexBoxCenter gap="4px" justify="flex-end">
+          <Box sx={{ fontWeight: '700' }}>{isDisplay ? displayPrice : price}</Box>
+          <Box>{isDisplay ? `(${price})` : null}</Box>
+        </FlexBoxCenter>
+      );
+    }
   },
   {},
   {
@@ -49,7 +66,7 @@ const createMenuColumns = ({
     align: 'center',
     cellRenderer: (value, values) => {
       const checked = Boolean(value);
-      return <StyledSwitch checked={checked} onChange={() => onToggleMenuVisible(values.id, 'isShowMenuName', !checked)} />;
+      return <StyledSwitch checked={checked} onChange={() => func.onToggleMenuVisible(values.id, 'isShowMenuName', !checked)} />;
     }
   },
   {
@@ -59,14 +76,20 @@ const createMenuColumns = ({
     align: 'center',
     cellRenderer: (value, values) => {
       const checked = Boolean(value);
-      return <StyledSwitch checked={checked} onChange={() => onToggleMenuVisible(values.id, 'isShowMenuPrice', !checked)} />;
+      return <StyledSwitch checked={checked} onChange={() => func.onToggleMenuVisible(values.id, 'isShowMenuPrice', !checked)} />;
     }
   },
   {
     fieldStyle: { width: '80px' },
     align: 'right',
     cellRenderer: (_, values) => (
-      <Button sx={{ height: '32px', color: '#ffffff' }} onClick={() => onOpenMenuEdit(values.id)}>
+      <Button
+        sx={{ height: '32px', color: '#ffffff' }}
+        onClick={(event) => {
+          event.stopPropagation();
+          func.onToggleModal(values.id);
+        }}
+      >
         설정
       </Button>
     )
@@ -81,11 +104,10 @@ const normalizeMenuDisplay = (menu: IMenuItem): IMenuItem => ({
 
 const MenuPage = () => {
   const navigate = useNavigate();
-
   const [menuDisplay, setMenuDisplay] = useState<IMenuItem[]>(() => (getMenuDisplayState() ?? []).map(normalizeMenuDisplay));
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedMenuId, setSelectedMenuId] = useState<string>();
   const [editedMenuId, setEditedMenuId] = useState<string>();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const { data: menuResponse, isLoading } = useGetCafeteriaMenu();
 
@@ -104,7 +126,7 @@ const MenuPage = () => {
 
       const nextDisplayState = baseMenus.map((menu) => normalizeMenuDisplay({ ...menu, ...storedById.get(menu.id) }));
       setMenuDisplay(nextDisplayState);
-      setMenuDisplayState(nextDisplayState);
+      setMenuDisplayState(nextDisplayState); // storageUtils
     }
   }, [menuResponse?.menu]);
 
@@ -119,14 +141,14 @@ const MenuPage = () => {
       const isExist = prevState.some((menu) => menu?.id === menuId);
       const nextDisplayState = isExist ? prevState.map((menu) => (menu?.id === menuId ? updatedMenu : menu)) : [...prevState, updatedMenu];
 
-      setMenuDisplayState(nextDisplayState);
+      setMenuDisplayState(nextDisplayState); // storageUtils
       return nextDisplayState;
     });
   }, []);
 
   const handleSelectMenu = useCallback((menuId: string, menuInfo: IMenuItem) => {
     setSelectedMenuId(menuId);
-    setLocalStorage('selectedMenu', menuInfo);
+    setSelectedMenu(menuInfo);
   }, []);
 
   const handleToggleModal = useCallback((menuId?: string) => {
@@ -144,8 +166,8 @@ const MenuPage = () => {
   const handleSubmit = (values: MenuDisplayValue) => {
     updateDisplayMenu(values.menuId, (menu) => ({
       ...menu,
-      name: values.menuName,
-      price: Number(values.menuPrice || 0),
+      displayMenuName: values.menuName,
+      displayMenuPrice: values.menuPrice,
       ticketType: values.ticketType
     }));
     handleToggleModal();
@@ -155,7 +177,7 @@ const MenuPage = () => {
     return createMenuColumns({
       selectedMenuId,
       onSelectMenu: handleSelectMenu,
-      onOpenMenuEdit: handleToggleModal,
+      onToggleModal: handleToggleModal,
       onToggleMenuVisible: handleMenuVisibility
     });
   }, [selectedMenuId, handleSelectMenu, handleToggleModal, handleMenuVisibility]);
@@ -166,15 +188,7 @@ const MenuPage = () => {
 
     return baseMenus.map((menu) => {
       const displayMenu = displayMenuById.get(menu.id);
-      return normalizeMenuDisplay(
-        displayMenu
-          ? {
-              ...menu,
-              ...displayMenu,
-              name: displayMenu.name !== menu.name ? `${displayMenu.name}(${menu.name})` : menu.name
-            }
-          : menu
-      );
+      return normalizeMenuDisplay(displayMenu ? { ...menu, ...displayMenu } : menu);
     });
   }, [menuResponse?.menu, menuDisplay]);
 

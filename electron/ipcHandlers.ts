@@ -62,7 +62,8 @@ export const barcodeLogger = () => {
 
 // 장부모드 파일 저장
 export const offlineBarcodeLogger = () => {
-  ipcMain.on('cafeteria-offline-barcode', (event, cafeteriaInfo) => {
+  ipcMain.removeHandler('cafeteria-offline-barcode');
+  ipcMain.handle('cafeteria-offline-barcode', async (event, cafeteriaInfo) => {
     const menuId = cafeteriaInfo?.params?.store?.menu ?? 'MID_EMPTY';
 
     electronConsoleLog(event.sender, '##### cafeteria-offline-barcode:', menuId, '|', cafeteriaInfo?.barcode);
@@ -72,14 +73,15 @@ export const offlineBarcodeLogger = () => {
     const logFilePath = path.join(logFolder, dayjs().format('YYYY-MM-DD'));
     const logEntry = `${currentDate}|${cafeteriaInfo?.barcode}|${menuId}\n`;
 
-    // 폴더 생성 로직 포함
-    if (!fs.existsSync(logFolder)) {
-      fs.mkdirSync(logFolder, { recursive: true });
-    }
+    try {
+      await fs.promises.mkdir(logFolder, { recursive: true });
+      await fs.promises.appendFile(logFilePath, logEntry);
 
-    fs.appendFile(logFilePath, logEntry, (error) => {
-      if (error) log.error('Failed to save barcode log', error);
-    });
+      return { isSuccess: true };
+    } catch (error) {
+      log.error('Failed to save barcode log', error);
+      return { isSuccess: false, message: '장부 저장에 실패했습니다.' };
+    }
   });
 };
 

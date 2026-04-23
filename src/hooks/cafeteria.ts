@@ -20,7 +20,8 @@ export interface IMenuItem {
   price: number;
   salesPrice: number;
   // 로컬 표시 정보
-  editedMenuName?: string;
+  displayMenuName?: string;
+  displayMenuPrice?: string;
   isShowMenuName?: boolean;
   isShowMenuPrice?: boolean;
   ticketType?: TicketType;
@@ -31,7 +32,6 @@ export interface IMenu {
 }
 
 // API Hooks
-
 export const useGetCafeteriaMenu = () => {
   const cafeteria = getLocalStorage('cafeteria');
 
@@ -114,7 +114,7 @@ export const useElectronStatusCheck = () => {
   const isOnLine = isBrowserOnline && healthQuery?.isSuccess;
 
   // 포커스 관련 이벤트 발생 시 Electron으로 부터 이벤트 응답 받음
-  useIpcListener('electron-focus', (_, value) => setIsFocusIn(value));
+  // useIpcListener('electron-focus', (_, value) => setIsFocusIn(value));
 
   useEffect(() => {
     const handleOnline = () => setIsBrowserOnline(true);

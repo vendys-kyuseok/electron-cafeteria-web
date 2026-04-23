@@ -52,6 +52,8 @@ export const getSelectedMenu = (): IMenuItem => {
 // 결제 관련 최근 에러 로그 조회
 export const getLatestErrors = (): LatestErrorLog[] => getLocalStorage(LATEST_ERRORS_STORAGE_KEY);
 
+// 선택한 메뉴 저장
+export const setSelectedMenu = (values: IMenuItem) => setLocalStorage(SELECTED_MENU_STORAGE_KEY, values);
 // 메뉴 표시 정보 추가
 export const setMenuDisplayState = (values: IMenuItem[]) => setLocalStorage(MENU_DISPLAY_STATE_STORAGE_KEY, values);
 // 결제 관련 에러 로그 추가
