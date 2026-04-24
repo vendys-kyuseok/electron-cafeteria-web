@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { enqueueSnackbar } from 'notistack';
 import { Box, Button } from '@mui/material';
 import { DialogTitle, DialogContent, DialogActions, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 import { DefaultKeyboard } from '@components';
@@ -49,6 +50,10 @@ const MenuDisplayStateModal = ({ menuId, open, onClose, onSubmit }: MenuDisplayS
     if (!menuId) return;
     const nextMenuName = inputMenuNameRef.current?.value ?? menuName;
     const nextMenuPrice = inputMenuPriceRef.current?.value ?? menuPrice;
+
+    if (!nextMenuName || !nextMenuPrice) {
+      return enqueueSnackbar('메뉴 정보를 입력해주세요', { variant: 'error' });
+    }
 
     onSubmit?.({ menuId, menuName: nextMenuName, menuPrice: nextMenuPrice, ticketType });
   };

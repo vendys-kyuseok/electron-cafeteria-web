@@ -114,7 +114,7 @@ export const useElectronStatusCheck = () => {
   const isOnLine = isBrowserOnline && healthQuery?.isSuccess;
 
   // 포커스 관련 이벤트 발생 시 Electron으로 부터 이벤트 응답 받음
-  // useIpcListener('electron-focus', (_, value) => setIsFocusIn(value));
+  useIpcListener('electron-focus', (_, value) => setIsFocusIn(value));
 
   useEffect(() => {
     const handleOnline = () => setIsBrowserOnline(true);

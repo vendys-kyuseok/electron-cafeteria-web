@@ -32,11 +32,11 @@ const createMenuColumns = ({ selectedMenuId, ...func }: MenuColumnOptions): TCol
     field: 'name',
     headerName: '매뉴명',
     cellRenderer: (value, values) => {
-      const isDisplay = values?.displayMenuName && values?.displayMenuName !== value;
+      const hasDisplayValue = values?.displayMenuName && values?.displayMenuName !== value;
       return (
         <FlexBoxCenter gap="4px">
-          <Box sx={{ fontWeight: '700' }}>{isDisplay ? values?.displayMenuName : value}</Box>
-          <Box>{isDisplay ? `(${value})` : null}</Box>
+          <Box sx={{ fontWeight: '700' }}>{hasDisplayValue ? values?.displayMenuName : value}</Box>
+          <Box>{hasDisplayValue ? `(${value})` : null}</Box>
         </FlexBoxCenter>
       );
     }
@@ -49,11 +49,11 @@ const createMenuColumns = ({ selectedMenuId, ...func }: MenuColumnOptions): TCol
     cellRenderer: (value, values) => {
       const price = Number(value || 0).toLocaleString();
       const displayPrice = Number(values?.displayMenuPrice || 0).toLocaleString();
-      const isDisplay = values?.displayMenuPrice && displayPrice !== price;
+      const hasDisplayValue = values?.displayMenuPrice && displayPrice !== price;
       return (
         <FlexBoxCenter gap="4px" justify="flex-end">
-          <Box sx={{ fontWeight: '700' }}>{isDisplay ? displayPrice : price}</Box>
-          <Box>{isDisplay ? `(${price})` : null}</Box>
+          <Box sx={{ fontWeight: '700' }}>{hasDisplayValue ? displayPrice : price}</Box>
+          <Box>{hasDisplayValue ? `(${price})` : null}</Box>
         </FlexBoxCenter>
       );
     }
@@ -104,16 +104,12 @@ const normalizeMenuDisplay = (menu: IMenuItem): IMenuItem => ({
 
 const MenuPage = () => {
   const navigate = useNavigate();
-  const [menuDisplay, setMenuDisplay] = useState<IMenuItem[]>(() => (getMenuDisplayState() ?? []).map(normalizeMenuDisplay));
-  const [selectedMenuId, setSelectedMenuId] = useState<string>();
-  const [editedMenuId, setEditedMenuId] = useState<string>();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
   const { data: menuResponse, isLoading } = useGetCafeteriaMenu();
 
-  useEffect(() => {
-    setSelectedMenuId(getSelectedMenu()?.id);
-  }, []);
+  const [menuDisplay, setMenuDisplay] = useState<IMenuItem[]>(() => (getMenuDisplayState() ?? []).map(normalizeMenuDisplay));
+  const [selectedMenuId, setSelectedMenuId] = useState<string>(() => getSelectedMenu()?.id);
+  const [editedMenuId, setEditedMenuId] = useState<string>();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const baseMenus = menuResponse?.menu ?? [];

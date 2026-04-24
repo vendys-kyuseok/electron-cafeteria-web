@@ -45,7 +45,6 @@ const LoginPage = () => {
       </CloseButton>
 
       <LoginFormWrapper>
-        <div id="messages">a</div>
         <Box className="login-content">
           <Box sx={{ padding: '12px 0px 4px' }}>아이디</Box>
           <TextField inputRef={inputUserNameRef} onFocus={() => handleFocusInput(inputUserNameRef)} onBlur={handleBlur} />

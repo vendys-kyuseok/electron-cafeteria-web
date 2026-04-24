@@ -1,17 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { registerIpcEvents, electronConsoleLog, getMacAddress } from './ipcHandlers';
+import { registerIpcEvents, electronConsoleLog, getMacAddress } from './handlers/ipcHandlers';
+import { registerUpdateHandlers } from './handlers/updateHandlers';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// electron-updater는 신규 버전 설치 파일을 자동으로 다운로드 함
-// 하지만 autoInstallOnAppQuit false인 경우 자동 업데이트 되지 않도록 설정 가능
-autoUpdater.autoInstallOnAppQuit = false;
-// autoUpdater.forceDevUpdateConfig = true;
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -88,10 +84,12 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(RENDERER_DIST, 'index.html'), { hash: '/' });
   }
 
-  registerWindowEvents();
+  // registerWindowEvents();
 };
 
 app.whenReady().then(() => {
+  const { checkForAppUpdates } = registerUpdateHandlers();
+
   createWindow();
   registerIpcEvents();
   registerAppEvents();
@@ -100,16 +98,5 @@ app.whenReady().then(() => {
     mainWindow?.webContents.close();
   });
 
-  autoUpdater.checkForUpdates();
-});
-
-// app.whenReady().then(createWindow);
-// 신규 버전 릴리즈 확인 시 호출 됨
-autoUpdater.on('checking-for-update', () => {
-  console.log('##### 업데이트 확인 중...');
-});
-
-// 업데이트 할 신규 버전이 있을 시 호출 됨
-autoUpdater.on('update-available', () => {
-  console.log('##### 신규 버전 확인 및 업데이트 가능.');
+  void checkForAppUpdates();
 });

@@ -6,6 +6,7 @@ import { Outlet, Link, useLocation, useNavigate, useMatch } from 'react-router-d
 import { motion } from 'framer-motion';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import SdCardAlertIcon from '@mui/icons-material/SdCardAlert';
 import { Box, Button } from '@mui/material';
 
@@ -39,7 +40,8 @@ const DIM_VARIANTS = {
 const MENU_LIST = [
   { path: '/cafeteria/menu', label: '메뉴 관리', icon: <MenuBookIcon /> },
   { path: '/cafeteria/usage', label: '사용 내역', icon: <ListAltIcon /> },
-  { path: '/cafeteria/latestError', label: '최근 에러 관리', icon: <SdCardAlertIcon /> }
+  { path: '/cafeteria/update', label: '업데이트 관리', icon: <BrowserUpdatedIcon /> },
+  { path: '/cafeteria/latestError', label: '최근 에러 내역', icon: <SdCardAlertIcon /> }
 ];
 
 export type MainLayoutOutletContext = {

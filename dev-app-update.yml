@@ -1,0 +1,4 @@
+provider: github
+owner: vendys-kyuseok
+repo: electron-cafeteria-web
+releaseType: release

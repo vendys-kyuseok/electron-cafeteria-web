@@ -10,8 +10,10 @@
   files: ['dist', 'dist-electron'],
   publish: [
     {
-      provider: 'generic',
-      url: 'https://update.sikdae.com/cafeteria/'
+      provider: 'github',
+      owner: 'vendys-kyuseok',
+      repo: 'electron-cafeteria-web',
+      releaseType: 'release'
     }
   ],
   win: {

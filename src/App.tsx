@@ -7,6 +7,7 @@ const MainLayout = React.lazy(() => import('@layouts/MainLayout'));
 const LoginPage = React.lazy(() => import('@pages/Login'));
 const MenuPage = React.lazy(() => import('@pages/Menu'));
 const UsagePage = React.lazy(() => import('@pages/Usage'));
+const UpdatePage = React.lazy(() => import('@pages/Update'));
 const LatestErrorPage = React.lazy(() => import('@pages/LatestError'));
 const PaymentPage = React.lazy(() => import('@pages/Payment'));
 
@@ -21,6 +22,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="cafeteria/menu" element={<MenuPage />} /> {/* 메뉴 선택 화면 */}
           <Route path="cafeteria/usage" element={<UsagePage />} /> {/* 사용자별 결제 내역 */}
+          <Route path="cafeteria/update" element={<UpdatePage />} /> {/* 최근 이슈 확인 */}
           <Route path="cafeteria/latestError" element={<LatestErrorPage />} /> {/* 최근 이슈 확인 */}
           <Route path="cafeteria/payment" element={<PaymentPage />} /> {/* 메뉴 결제 화면 */}
           {/* 잘못된 URL로 접근 시 메뉴 선택으로 보냄 */}
